@@ -32,7 +32,7 @@ def extract_nodule_mask(patch, min_volume=100):
 
 def create_3d_nodule_visualization(patch, method='auto', threshold=None, 
                                    sphere_center=None, sphere_radius_mm=None, spacing=(1,1,1)):
-    """3D重建（可能失败，作为备用）"""
+    """3D重建（备用）"""
     if patch is None or patch.size == 0:
         return go.Figure()
     mask = None
