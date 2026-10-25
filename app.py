@@ -16,6 +16,7 @@ from utils import load_nifti, extract_patch_around_center, normalize_hu, physica
 HISTORY_FILE = "evaluation_history.csv"
 
 def load_history():
+    #读取历史评估记录
     if not os.path.exists(HISTORY_FILE):
         return []
     with open(HISTORY_FILE, 'r', encoding='utf-8') as f:
@@ -25,6 +26,7 @@ def load_history():
     return records
 
 def save_record(record):
+    #将本次评估结果写入CSV
     fieldnames = ['timestamp', 'cur_ct', 'pri_ct', 'months', 'nodule_size', 'nodule_type',
                   'prior_size', 'growth_rate', 'risk', 'confidence', 'risk_level',
                   'vol_cur', 'vol_pri', 'vdt', 'coordX', 'coordY', 'coordZ']

@@ -5,7 +5,7 @@ from scipy import ndimage
 from skimage.filters import threshold_otsu
 
 def generate_sphere_mask(shape, center, radius_mm, spacing):
-    """生成球体 mask（备用）"""
+    """生成球体 mask"""
     radius_voxel = radius_mm / np.mean(spacing)
     z, y, x = np.ogrid[:shape[0], :shape[1], :shape[2]]
     dz = (z - center[0]) * spacing[0]
@@ -16,23 +16,24 @@ def generate_sphere_mask(shape, center, radius_mm, spacing):
     return mask
 
 def extract_nodule_mask(patch, min_volume=100):
-    """自动分割（备用）"""
-    thresh = threshold_otsu(patch)
+    """自动分割"""
+    thresh = threshold_otsu(patch)        #大津法，可计算最佳阈值，使结节与肺实质的类间方差最大
     binary = patch > thresh
     labeled, num_features = ndimage.label(binary)
     if num_features == 0:
         return None
+    #连通域分析，剔除周围血管等噪点
     sizes = ndimage.sum(binary, labeled, range(1, num_features+1))
     max_idx = np.argmax(sizes) + 1
     mask = (labeled == max_idx).astype(np.uint8)
-    if sizes[max_idx-1] < min_volume:
+    if sizes[max_idx-1] < min_volume:    #若分割出的最大连通块体积也太小，说明可能只是切片层面的噪点，即伪结节
         return None
-    mask = ndimage.binary_closing(mask, structure=np.ones((3,3,3))).astype(np.uint8)
+    mask = ndimage.binary_closing(mask, structure=np.ones((3,3,3))).astype(np.uint8)    #形态学闭运算，使得提取的3D形状更完整
     return mask
 
 def create_3d_nodule_visualization(patch, method='auto', threshold=None, 
                                    sphere_center=None, sphere_radius_mm=None, spacing=(1,1,1)):
-    """3D重建（备用）"""
+    """3D重建"""
     if patch is None or patch.size == 0:
         return go.Figure()
     mask = None

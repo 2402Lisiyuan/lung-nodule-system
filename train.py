@@ -166,9 +166,9 @@ def main(args):
     # 训练集启用增强
     train_set.dataset.augment = True
 
-    train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True, num_workers=0)
-    val_loader = DataLoader(val_set, batch_size=args.batch_size, shuffle=False, num_workers=0)
-    test_loader = DataLoader(test_set, batch_size=args.batch_size, shuffle=False, num_workers=0)
+    train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True, num_workers=8)
+    val_loader = DataLoader(val_set, batch_size=args.batch_size, shuffle=False, num_workers=4)
+    test_loader = DataLoader(test_set, batch_size=args.batch_size, shuffle=False, num_workers=4)
 
     print(f"训练集: {n_train} | 验证集: {n_val} | 测试集: {n_test}")
 
