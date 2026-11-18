@@ -8,14 +8,14 @@ plt.rcParams['axes.unicode_minus'] = False
 plt.rcParams['font.size'] = 12
 
 # 读取训练日志
-log_path = "training_log.csv"
+log_path = "../training_log.csv"
 if not os.path.exists(log_path):
     raise FileNotFoundError(f"未找到训练日志: {log_path}")
 
 df = pd.read_csv(log_path)
 
 # 创建输出文件夹
-os.makedirs("figures", exist_ok=True)
+os.makedirs("../figures", exist_ok=True)
 
 # ========== 图1：损失曲线 ==========
 plt.figure(figsize=(8, 5))

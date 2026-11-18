@@ -5,7 +5,7 @@ import pandas as pd
 import SimpleITK as sitk
 import torch
 from torch.utils.data import Dataset
-from utils import normalize_hu, physical_to_voxel, extract_patch_around_center
+from backend.utils import normalize_hu, physical_to_voxel, extract_patch_around_center
 
 
 class LUNA16Dataset(Dataset):

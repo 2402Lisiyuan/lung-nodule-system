@@ -8,9 +8,9 @@ import glob
 import csv
 import tempfile
 from datetime import datetime
-from model import load_model
-from viz3d import create_ct_slice_viewer
-from utils import load_nifti, extract_patch_around_center, normalize_hu, physical_to_voxel, load_annotations, compute_nodule_volume
+from backend.model import load_model
+from backend.viz3d import create_ct_slice_viewer
+from backend.utils import load_nifti, extract_patch_around_center, normalize_hu, physical_to_voxel, load_annotations, compute_nodule_volume
 
 # ========== 历史记录功能 ==========
 HISTORY_FILE = "evaluation_history.csv"

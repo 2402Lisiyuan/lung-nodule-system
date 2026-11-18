@@ -21,7 +21,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, random_split
 from sklearn.metrics import roc_auc_score
 
-from model import TemporalNoduleRiskNet
+from backend.model import TemporalNoduleRiskNet
 from dataset import LUNA16Dataset
 
 
@@ -192,7 +192,7 @@ def main(args):
     log_records = []
 
     # 初始化日志文件
-    with open("training_log.csv", "w", newline="") as f:
+    with open("../training_log.csv", "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["epoch", "train_loss", "train_auc", "val_loss", "val_auc", "lr"])
 
@@ -221,7 +221,7 @@ def main(args):
             "val_auc": val_auc,
             "lr": current_lr
         })
-        with open("training_log.csv", "a", newline="") as f:
+        with open("../training_log.csv", "a", newline="") as f:
             writer = csv.writer(f)
             writer.writerow([epoch + 1, train_loss, train_auc, val_loss, val_auc, current_lr])
 

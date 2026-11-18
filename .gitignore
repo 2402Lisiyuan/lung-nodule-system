@@ -6,19 +6,29 @@ venv/
 __pycache__/
 *.pyc
 
-# 数据文件
-*.pth
-*.csv
+# 敏感信息与本地数据
+.env
+*.db
+uploads/
+
+# 数据文件 (过滤大数据集，但保留核心模型权重)
 *.nii.gz
 *.mhd
 *.raw
 *.log
+*.csv
 figures/
+# 排除所有 pth，但强制包含我们需要上传的模型
+*.pth
+!backend/pretrained_large.pth
 
 # 临时脚本
-convert.py
-generate_dummy_weights.py
+scripts/convert.py
+scripts/generate_dummy_weights.py
 
 # IDE 配置
 .idea/
 *.iml
+
+# 其他
+.DS_Store

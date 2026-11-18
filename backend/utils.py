@@ -1,16 +1,36 @@
 import nibabel as nib
+import SimpleITK as sitk
 import numpy as np
 import pandas as pd
 from scipy import ndimage
 
 
 def load_nifti(file_path):
-    """加载 NIfTI 或 MetaImage 文件，返回 volume, spacing, affine"""
-    img = nib.load(file_path)
-    volume = img.get_fdata().astype(np.float32)
-    spacing = img.header.get_zooms()
-    affine = img.affine
-    return volume, spacing, affine
+    """
+    加载 NIfTI 或 MetaImage(.mhd) 文件，返回 volume, spacing, affine
+    """
+    if file_path.endswith('.mhd'):
+        # 如果是 .mhd 格式，使用 SimpleITK 读取
+        img = sitk.ReadImage(file_path)
+        volume = sitk.GetArrayFromImage(img)  # 返回的 volume 顺序是 (z, y, x)
+
+        spacing_xyz = img.GetSpacing()
+        spacing_zyx = (spacing_xyz[2], spacing_xyz[1], spacing_xyz[0])
+
+        origin = img.GetOrigin()
+        direction = np.array(img.GetDirection()).reshape(3, 3)
+        affine = np.eye(4)
+        affine[:3, :3] = direction * np.array(spacing_xyz)
+        affine[:3, 3] = origin
+
+        return volume.astype(np.float32), spacing_zyx, affine
+    else:
+        # 如果是 .nii 或 .nii.gz 格式，使用 nibabel
+        img = nib.load(file_path)
+        volume = img.get_fdata().astype(np.float32)
+        spacing = img.header.get_zooms()
+        affine = img.affine
+        return volume, spacing, affine
 
 
 def extract_patch_around_center(volume, center_voxel, patch_size=64):
@@ -58,29 +78,8 @@ def physical_to_voxel(physical_coords_mm, affine, volume_shape):
     return (z, y, x)
 
 
-def load_annotations(csv_file):
-    """加载 LUNA16 格式的 annotations.csv，返回 {seriesuid: [结节列表]}"""
-    df = pd.read_csv(csv_file)
-    annotations = {}
-    for _, row in df.iterrows():
-        uid = row['seriesuid']
-        if uid not in annotations:
-            annotations[uid] = []
-        annotations[uid].append({
-            'coordX': row['coordX'],
-            'coordY': row['coordY'],
-            'coordZ': row['coordZ'],
-            'diameter_mm': row['diameter_mm']
-        })
-    return annotations
-
-
 def compute_nodule_volume(patch, spacing, hu_threshold=-300):
-    """
-    从 patch 中分割结节并计算体积 (mm³)
-    patch: 三维 numpy 数组 (Z, Y, X)，已归一化到 [0,1]
-    spacing: (dz, dy, dx) 单位 mm
-    """
+    """从 patch 中分割结节并计算体积 (mm³)"""
     hu = patch * 1400.0 - 1000.0
     mask = hu > hu_threshold
     labeled, num_features = ndimage.label(mask)
